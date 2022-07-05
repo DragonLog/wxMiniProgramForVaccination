@@ -1,0 +1,2 @@
+# wxMiniProgramForVaccination
+基于微信小程序的疫苗预约接种系统，包括后台管理界面和微信小程序界面
