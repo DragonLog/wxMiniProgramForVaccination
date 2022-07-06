@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link href="../../../layuiadmin/layui/css/layui.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<br>
+		<form class="layui-form" id="yimiaoForm">
+			<!-- 隐藏域存放记录id -->
+			<input type="hidden" name="id" id="id"/>
+			<div class="layui-form-item">
+				<label class="layui-form-label">疫苗名称</label>
+				<div class="layui-input-block">
+				  <input type="text" id="name"  name="name" lay-verify="required" autocomplete="off" placeholder="请输入疫苗名称" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">疫苗单价</label>
+				<div class="layui-input-block">
+					<input type="number" id="price" name="price" lay-verify="required" autocomplete="off" placeholder="请输入疫苗单价" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">生产厂家</label>
+				<div class="layui-input-block">
+					<input type="text" id="manufacturer" name="manufacturer" lay-verify="required" autocomplete="off" placeholder="请输入疫苗生产厂家" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">疫苗分类</label>
+				<div class="layui-input-block">
+					<input type="text" id="category" name="category" lay-verify="required" autocomplete="off" placeholder="请输入疫苗分类" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">疫苗详情</label>
+				<div class="layui-input-block">
+					<input type="text" id="detail" name="detail" lay-verify="required" autocomplete="off" placeholder="请输入疫苗详情" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-upload">
+				<label class="layui-form-label">疫苗图片:</label>
+				<div class="layui-upload layui-input-block">
+					<input type="hidden" id="imgUrl" name="imgUrl" required lay-verify="required" />
+					<button type="button" class="layui-btn layui-btn-primary" id="fileBtn"><i class="layui-icon">&#xe67c;</i>选择疫苗图片</button>
+					<button type="button" class="layui-btn layui-btn-warm" id="uploadBtn">开始上传</button>
+				</div>
+			</div>
+			<div class="layui-form-item">
+<!--				<div style="text-align:right;width:1%;">&lt;!&ndash;background:&ndash;&gt;-->
+					<button lay-filter="yimiaoAdd" class="layui-btn layui-btn-normal"  lay-submit="">修改</button>
+<!--				</div>-->
+			</div>
+			
+		</form>
+		</div>
+	</body>
+	<script src="../../../layuiadmin/app.js"></script>
+	<script src="../../../layuiadmin/layui/layui.js"></script>
+	<script>
+	layui.use(['jquery','form', 'upload'],function(){
+
+		var upload = layui.upload;
+		upload.render({
+			elem: '#fileBtn'
+			,url: server_url+"/admin/vaccineImage/upload"
+			,accept: 'file'
+			,auto: false
+			,bindAction: '#uploadBtn'
+					,headers:{
+						"x-token":localStorage.getItem("token")
+					}
+			,done: function(res){
+				if (res.code != 0) {
+					alert("上传失败");
+				}
+				alert("上传成功");
+				$("[name=imgUrl]").val(res.data);
+			}
+		});
+
+		var $=layui.jquery,form =layui.form;
+		var index = parent.layer.getFrameIndex(window.name);
+		form.on('submit(yimiaoAdd)', function(data){
+			console.log(JSON.stringify(data.field))
+			//ajax 提交
+			$.ajax({
+				type: "PUT",
+				dataType: "JSON",
+				url: server_url+"/admin/vaccine/change" ,//url
+				data: $('#yimiaoForm').serialize(),  //表单数据
+				headers:{
+					"x-token":localStorage.getItem("token")
+				},
+				success: function (result) {
+					if (result.code == 0) {
+						parent.layer.msg('修改成功，1秒后自动关闭该窗口');
+						window.setTimeout(function(){
+							parent.layer.close(index);
+						},1000);	
+						
+					}else{
+						parent.layer.msg("修改失败："+result.message);
+					}
+				},
+				error : function() {
+					layer.msg('后台异常！未修改成功');
+				}
+			});
+			//阻止页面跳转
+			return false;
+			
+		});
+	})
+	
+	</script>
+</html>

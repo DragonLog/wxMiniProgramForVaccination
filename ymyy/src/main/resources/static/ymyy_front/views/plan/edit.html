@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link href="../../layuiadmin/layui/css/layui.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<br>
+		<form class="layui-form" id="yimiaoForm">
+			<!-- 隐藏域存放记录id -->
+			<input type="hidden" name="id" id="id"/>
+			<div class="layui-form-item">
+				<label class="layui-form-label">起始日期</label>
+				<div class="layui-input-block">
+				  <input type="date" id="startDate"  name="startDate" lay-verify="required" autocomplete="off" placeholder="请输入起始日期" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">结束日期</label>
+				<div class="layui-input-block">
+					<input type="date" id="endDate"  name="endDate" lay-verify="required" autocomplete="off" placeholder="请输入结束日期" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">上午起始</label>
+				<div class="layui-input-block">
+					<input type="number" id="startTimeMorning"  name="startTimeMorning" lay-verify="required" autocomplete="off" placeholder="请输入上午起始时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">上午限制</label>
+				<div class="layui-input-block">
+					<input type="number" id="morningLimit"  name="morningLimit" lay-verify="required" autocomplete="off" placeholder="请输入上午预约限制量" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">上午结束</label>
+				<div class="layui-input-block">
+					<input type="number" id="endTimeMorning"  name="endTimeMorning" lay-verify="required" autocomplete="off" placeholder="请输入上午结束时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">下午起始</label>
+				<div class="layui-input-block">
+					<input type="number" id="startTimeAfternoon"  name="startTimeAfternoon" lay-verify="required" autocomplete="off" placeholder="请输入下午起始时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">下午限制</label>
+				<div class="layui-input-block">
+					<input type="number" id="afternoonLimit"  name="afternoonLimit" lay-verify="required" autocomplete="off" placeholder="请输入下午预约限制量" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">下午结束</label>
+				<div class="layui-input-block">
+					<input type="number" id="endTimeAfternoon"  name="endTimeAfternoon" lay-verify="required" autocomplete="off" placeholder="请输入下午结束时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">夜晚起始</label>
+				<div class="layui-input-block">
+					<input type="number" id="startTimeEvening"  name="startTimeEvening" lay-verify="required" autocomplete="off" placeholder="请输入夜晚起始时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">夜晚限制</label>
+				<div class="layui-input-block">
+					<input type="number" id="eveningLimit"  name="eveningLimit" lay-verify="required" autocomplete="off" placeholder="请输入夜晚预约限制量" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">夜晚结束</label>
+				<div class="layui-input-block">
+					<input type="number" id="endTimeEvening"  name="endTimeEvening" lay-verify="required" autocomplete="off" placeholder="请输入夜晚结束时间" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">可预约量</label>
+				<div class="layui-input-block">
+					<input type="number" id="amount"  name="amount" lay-verify="required" autocomplete="off" placeholder="请输入可预约总量" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">接种点地址</label>
+				<h3 id="district" style="line-height: 36px"></h3>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">修改地址</label>
+				<div class="layui-input-inline">
+					<select id="province" lay-filter="province" >
+						<option value="">请选择省</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="city" lay-filter="city" >
+						<option value="">请选择市</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="area"  lay-filter="area" >
+						<option value="">请选择县/区</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="inoculateSite" name="inoculateSiteId"  lay-filter="inoculateSite" >
+						<option value="">请选择接种点</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">疫苗名称</label>
+				<h3 id="vaccineName" style="line-height: 36px"></h3>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">修改疫苗</label>
+				<div class="layui-input-inline">
+					<select id="vaccine_name" name="vaccineId" lay-filter="vaccine_name" >
+						<option value="">请选择疫苗</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div style="text-align:right;width:1%;"><!--background:-->
+					<button lay-filter="yimiaoAdd" class="layui-btn layui-btn-normal"  lay-submit="">修改</button>
+				</div>
+			</div>
+		</form>
+		</div>
+	</body>
+	<script src="../../layuiadmin/app.js"></script>
+	<script src="../../layuiadmin/layui/layui.js"></script>
+	<script>
+	layui.use(['jquery','form','layedit'],function(){
+		var $=layui.jquery,form =layui.form;
+		var index = parent.layer.getFrameIndex(window.name);
+		form.on('submit(yimiaoAdd)', function(data){
+			//ajax 提交
+			$.ajax({
+				type: "PUT",
+				dataType: "JSON",
+				url: server_url+"/admin/plan/change" ,//url
+				data: $('#yimiaoForm').serialize(),  //表单数据
+				headers:{
+					"x-token":localStorage.getItem("token")
+				},
+				success: function (result) {
+					console.log(result)
+					if (result.code == 0) {
+						parent.layer.msg('修改成功，1秒后自动关闭该窗口');
+						window.setTimeout(function(){
+							parent.layer.close(index);
+						},1000);	
+						
+					}else{
+						parent.layer.msg("修改失败："+result.message);
+
+					}
+				},
+				error : function() {
+					layer.msg('后台异常！未添加成功');
+				}
+			});
+			return false;
+			
+		});
+		
+
+		var provinceText = "";
+		var cityText = "";
+		var areaText = "";
+		var inoculateSiteText = "";
+
+		$.get(server_url+"/vaccine/findAll",function (data) {
+			if(data.code != 0){
+				layer.msg(data.msg)
+			}else{
+				var $html = "";
+				if(data.data != null) {
+					$.each(data.data, function (index, item) {
+						$html += "<option value='" + item.id + "'>" + item.name + "</option>";
+					});
+					$("#vaccine_name").append($html);
+					//append后必须从新渲染
+					form.render('select');
+				}
+			}
+
+		});
+
+		//异步加载下拉框数据
+		$.get(server_url+"/district/findAllProvinces",function (data) {
+			if(data.code != 0){
+				layer.msg(data.msg)
+			}else{
+				var $html = "";
+				if(data.data != null) {
+					$.each(data.data, function (index, item) {
+						$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+					});
+					$("#province").append($html);
+					//append后必须从新渲染
+					form.render('select');
+				}
+			}
+
+		});
+		//监听省下拉框
+		form.on('select(province)', function(dataObj){
+			//移除城市下拉框所有选项
+			$("#city").empty();
+			var cityHtml = '<option value="">请选择市</option>';
+			$("#city").html(cityHtml);
+			var areaHtml = '<option value="">请选择县/区</option>';
+			$("#area").html(areaHtml);
+			provinceText = $("#province").find("option:selected").text();
+			var value = $("#province").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/district/findAllCities",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+						});
+						$("#city").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+		});
+//监听市下拉框
+		form.on('select(city)', function(dataObj){
+			//移除县区下拉框所有选项
+			$("#area").empty();
+			var html = '<option value="">请选择县/区</option>';
+			$("#area").html(html);
+
+			cityText = $("#city").find("option:selected").text();
+			var value = $("#city").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/district/findAllDistricts",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+						});
+						$("#area").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+
+		});
+		//监听县区下拉框
+		form.on('select(area)', function(dataObj){
+			areaText = $("#area").find("option:selected").text();
+
+			$("#inoculateSite").empty();
+			var html = '<option value="">请选择接种点</option>';
+			$("#inoculateSite").html(html);
+
+			areaText = $("#area").find("option:selected").text();
+			var value = $("#area").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/inoculateSite/findAllInoculateSites",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.id + "'>" + item.name + "</option>";
+						});
+						$("#inoculateSite").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+		});
+		form.on('select(inoculateSite)', function(dataObj){
+			inoculateSiteText = $("#inoculateSite").find("option:selected").text();
+		});
+	})
+	
+	</script>
+</html>

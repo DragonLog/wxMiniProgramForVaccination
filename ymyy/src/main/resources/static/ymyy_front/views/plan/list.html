@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>接种计划</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+						<div class="layui-form-item demoTable">
+							<div class="layui-inline">
+								<label class="layui-form-label">疫苗名称</label>
+								<div class="layui-input-block">
+									<input type="text" id="yimiao" name="yimiao" placeholder="请输入疫苗名称" autocomplete="off"
+										   class="layui-input">
+								</div>
+							</div>
+
+							<div class="layui-inline">
+								<button id="queryBtn" class="layui-btn layui-btn-primary" lay-submit
+										lay-filter="LAY-user-front-search">
+									<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+					<table id="myTable" lay-filter="test"></table>
+				</div>
+
+			</div>
+		</div>
+		
+		
+		
+			<script type="text/html" id="toolbarDemo">
+			  <div class="layui-btn-container">
+			    <button class="layui-btn layui-btn-normal" lay-event="add">添加</button>
+			  </div>
+			</script>
+			<script type="text/html" id="barDemo">
+			  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+			</script>
+
+	</body>
+	
+	<script src="../../layuiadmin/app.js"></script>
+	<script src="../../layuiadmin/layui/layui.js"></script>
+	<script>
+		layui.use(['jquery', 'table','layer'], function() {
+			var table = layui.table,layer=layui.layer;
+			window.jQuery = window.$ = layui.jquery;
+
+			
+
+			//方法级渲染
+			table.render({
+					elem: '#myTable',
+					toolbar: '#toolbarDemo',
+					method: "get",
+					url: server_url + '/admin/plan/pageQuery',
+					limits: [3,5,8,10,15,20],//这里是设置每页显示的个数的一个数组
+					headers: {
+				"x-token":localStorage.getItem("token")
+			},
+					cols: [[
+						{field: 'id',title: 'ID',width: 80,sort: true,fixed: true,align:"center"},
+						{field: 'vaccineName',title: '疫苗名称',width: 150,align:"center"},
+						{field: 'inoculateSiteName',title: '接种点名称',width: 150,align:"center"},
+						{field: 'amount',title: '可预约总量',width: 120,sort: true,align:"center"},
+						{field: 'startDate',title: '起始日期',width: 150,sort: true,align:"center"},
+						{field: 'endDate',title: '结束日期',width: 150,sort: true,align:"center"},
+						{field: 'startTimeMorning',title: '上午起始整点数',width: 150,sort: true,align:"center"},
+						{field: 'morningLimit',title: '上午最大预约量',width: 150,sort: true,align:"center"},
+						{field: 'endTimeMorning',title: '上午结束整点数',width: 150,sort: true,align:"center"},
+						{field: 'startTimeAfternoon',title: '下午起始整点数',width: 150,sort: true,align:"center"},
+						{field: 'afternoonLimit',title: '下午最大预约量',width: 150,sort: true,align:"center"},
+						{field: 'endTimeAfternoon',title: '下午结束整点数',width: 150,sort: true,align:"center"},
+						{field: 'startTimeEvening',title: '夜晚起始整点数',width: 150,sort: true,align:"center"},
+						{field: 'eveningLimit',title: '夜晚最大预约量',width: 150,sort: true,align:"center"},
+						{field: 'endTimeEvening',title: '夜晚结束整点数',width: 150,sort: true,align:"center"},
+						{fixed:'right',title:'操 作',toolbar:'#barDemo', width: 150,align:"center"}
+					]],
+					page: true,
+					request: {
+						pageName: 'current' //页码的参数名称，默认：page
+						,limitName: 'limit' //每页数据量的参数名，默认：limit
+					}
+				}
+			);
+
+			document.getElementById("queryBtn").onclick = function() {
+				//执行重载
+				table.reload('myTable', {
+					page: {
+						curr: 1 //重新从第 1 页开始
+					},
+					where: {
+						name: $("#yimiao").val()
+					}
+				});
+				return false;
+
+			};
+
+			table.on('toolbar(test)', function(obj){
+				var checkStatus = table.checkStatus(obj.config.id);
+			    switch(obj.event){
+			      case 'add':
+			        layer.open({
+					type: 2,
+					content: ["add.html"],   //添加页，后台controller转发到指定页
+					area: ["1200px", "500px"],
+					title: ['接种计划添加'],
+					fixed: false,
+					shadeClose: true,
+					end: function () {  //刷新页面
+					  location.reload();
+					}
+				});
+			      break;
+			    
+			    };
+			});
+			
+			// 给table的行工具栏绑定事件
+			table.on('tool(test)',function(obj){
+				console.log(obj.event);
+				// console.log(obj.data);
+				switch(obj.event){
+				case 'del':
+					//询问框							
+					layer.msg('你确定要删除么？', {
+						time: 0 //不自动关闭
+						,btn: ['确认', '取消']
+						,yes: function(index){
+							$.ajax({
+								url: server_url+"/admin/plan/remove?id="+obj.data.id,
+								type: "delete",
+								headers:{
+									"x-token":localStorage.getItem("token")
+								},
+								success: function (res) {
+									if(res.code == 0){
+										layer.close(index);
+										layer.msg('删除成功', { icon: 6 });
+									}else{
+										layer.close(index);
+										layer.msg('删除失败:'+res.message, { icon: 6 });
+									}
+									window.setTimeout(function(){
+										location.reload();
+									},1000);
+								}
+							})
+							
+						}
+					});
+				break;
+				case 'edit':
+				
+					layer.open({
+						type: 2,
+						content: ["edit.html"],   //添加页，后台controller转发到指定页
+						area: ["1200px", "500px"],
+						title: ['接种计划编辑'],
+						fixed: false,
+						shadeClose: true,
+						end: function () {  //刷新页面
+							location.reload();
+						},
+						success: function(layero, index){
+							var body=layer.getChildFrame('body',index);//少了这个是不能从父页面向子页面传值的
+				　　　　　　　body.contents().find("#id").val(obj.data.id);
+				　　　　　　　body.contents().find("#startDate").val(obj.data.startDate);
+				　　　　　　　body.contents().find("#endDate").val(obj.data.endDate);
+				　　　　　　　body.contents().find("#startTimeMorning").val(obj.data.startTimeMorning);
+							body.contents().find("#morningLimit").val(obj.data.morningLimit);
+				　　　　　　　body.contents().find("#startTimeAfternoon").val(obj.data.startTimeAfternoon);
+				　　　　　　　body.contents().find("#endTimeMorning").val(obj.data.endTimeMorning);
+				　　　　　　　body.contents().find("#afternoonLimit").val(obj.data.afternoonLimit);
+				　　　　　　　body.contents().find("#endTimeAfternoon").val(obj.data.endTimeAfternoon);
+				　　　　　　　body.contents().find("#startTimeEvening").val(obj.data.startTimeEvening);
+				　　　　　　　body.contents().find("#eveningLimit").val(obj.data.eveningLimit);
+				　　　　　　　body.contents().find("#endTimeEvening").val(obj.data.endTimeEvening);
+				　　　　　　　body.contents().find("#amount").val(obj.data.amount);
+				　　　　　　　body.contents().find("#district").text(obj.data.inoculateSiteName);
+				　　　　　　　body.contents().find("#vaccineName").text(obj.data.vaccineName);
+						},
+					});
+									
+				    break;
+				}
+			})
+		});
+	
+	</script>
+	
+	
+</html>

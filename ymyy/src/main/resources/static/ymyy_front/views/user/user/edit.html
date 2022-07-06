@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<!-- 1.引入layui.css -->
+		<link href="../../../layuiadmin/layui/css/layui.css" rel="stylesheet"/>
+		
+	</head>
+	<body>
+	<div class="layui-fluid">
+		 <br>
+	
+		<form class="layui-form" action="">
+			<input type="hidden" id="id" name="id" />
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">账号</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="username" name="username" required="required" lay-verify="required" autocomplete="off" placeholder="请输入账号" class="layui-input">
+		    </div>
+	 </div>
+	 <div class="layui-form-item">
+	 		    <label class="layui-form-label">姓名</label>
+	 		    <div class="layui-input-block">
+	 		      <input type="text" id="realName" name="realName" required="required" lay-verify="required" autocomplete="off" placeholder="请输入真实姓名" class="layui-input">
+	 		    </div>
+	 </div>
+	 <div class="layui-form-item">
+	 		    <label class="layui-form-label">密码</label>
+	 		    <div class="layui-input-block">
+	 		      <input type="text" id="password" name="password" required="required" lay-verify="required" autocomplete="off" placeholder="请输入密码" class="layui-input">
+	 		    </div>
+	 </div>
+	 <div class="layui-form-item">
+	 		    <label class="layui-form-label">手机号</label>
+	 		    <div class="layui-input-block">
+	 		      <input type="text" id="phone" name="phone" required="required" lay-verify="required" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+	 		    </div>
+	 </div>
+	 <div class="layui-form-item">
+	 		    <label class="layui-form-label">身份证号</label>
+	 		    <div class="layui-input-block">
+	 		      <input type="text" id="cardId" name="cardId" required="required" lay-verify="required" autocomplete="off" placeholder="请输入身份证号" class="layui-input">
+	 		    </div>
+	 </div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">行政区域</label>
+				<h3 id="district" style="line-height: 36px"></h3>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">修改区域</label>
+				<div class="layui-input-inline">
+					<select id="province" lay-filter="province" >
+						<option value="">请选择省</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="city" lay-filter="city" >
+						<option value="">请选择市</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="area" name="districtCode" lay-filter="area" >
+						<option value="">请选择县/区</option>
+					</select>
+				</div>
+			</div>
+	
+	 <div class="layui-form-item">
+	 		    <label class="layui-form-label">地址</label>
+	 		    <div class="layui-input-block">
+	 		      <input type="text" id="address" name="address" required="required" lay-verify="required|address" autocomplete="off" placeholder="请输入地址" class="layui-input">
+	 		    </div>
+	 </div>
+	 <div class="layui-form-item">
+			 <div class="layui-input-block"> 
+				 <button type="button" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="demo1">修改</button>
+			 </div> 
+	</div>
+		  </form>
+		  </div>
+		  <!-- 2.引入layui.js -->
+		  <script src="../../../layuiadmin/layui/layui.js"></script>
+		  
+		  <script>
+		  var server="http://localhost:8080"
+		  layui.use(["jquery","form","layer"],function(){
+			   var $=layui.jquery,form = layui.form,layer = layui.layer;
+
+			   form.on("submit(demo1)",function(obj){
+					$.ajax({
+						url: server+"/admin/user/change",//修改保存
+						type: "put",
+						headers:{
+							"x-token":localStorage.getItem("token")
+						},
+						data:$(".layui-form").serialize(),
+					success:function(res){
+					 if(res.code==0){
+						 parent.layer.msg("更新成功")
+						 // 关闭层
+						 // 1.获取层的索引号
+						 var index =parent.layer.getFrameIndex(window.name);
+						 window.setTimeout(function(){
+							 parent.layer.close(index);
+						 },1000);
+
+					 }else{
+						 var index =parent.layer.getFrameIndex(window.name);
+						 parent.layer.msg("修改失败："+result.message);
+					 }
+				 },
+						error : function() {
+							layer.msg('后台异常！修改失败');
+						}
+				 
+					})
+					return false;
+			  });
+
+			  var provinceText = "";
+			  var cityText = "";
+			  var areaText = "";
+			  //异步加载下拉框数据
+			  $.get(server+"/district/findAllProvinces",function (data) {
+				  if(data.code != 0){
+					  layer.msg(data.msg)
+				  }else{
+					  var $html = "";
+					  if(data.data != null) {
+						  $.each(data.data, function (index, item) {
+							  $html += "<option value='" + item.code + "'>" + item.name + "</option>";
+						  });
+						  $("#province").append($html);
+						  //append后必须从新渲染
+						  form.render('select');
+					  }
+				  }
+
+			  });
+			  //监听省下拉框
+			  form.on('select(province)', function(dataObj){
+				  //移除城市下拉框所有选项
+				  $("#city").empty();
+				  var cityHtml = '<option value="">请选择市</option>';
+				  $("#city").html(cityHtml);
+				  var areaHtml = '<option value="">请选择县/区</option>';
+				  $("#area").html(areaHtml);
+				  provinceText = $("#province").find("option:selected").text();
+				  var value = $("#province").val();
+				  //异步加载下拉框数据
+				  $.get(server+"/district/findAllCities",{"code":value},function (data) {
+					  if(data.code != 0){
+						  layer.msg(data.msg)
+					  }else{
+						  var $html = "";
+						  if(data.data != null) {
+							  $.each(data.data, function (index, item) {
+								  $html += "<option value='" + item.code + "'>" + item.name + "</option>";
+							  });
+							  $("#city").append($html);
+							  //append后必须从新渲染
+							  form.render('select');
+						  }
+					  }
+
+				  });
+			  });
+//监听市下拉框
+			  form.on('select(city)', function(dataObj){
+				  //移除县区下拉框所有选项
+				  $("#area").empty();
+				  var html = '<option value="">请选择县/区</option>';
+				  $("#area").html(html);
+
+				  cityText = $("#city").find("option:selected").text();
+				  var value = $("#city").val();
+				  //异步加载下拉框数据
+				  $.get(server+"/district/findAllDistricts",{"code":value},function (data) {
+					  if(data.code != 0){
+						  layer.msg(data.msg)
+					  }else{
+						  var $html = "";
+						  if(data.data != null) {
+							  $.each(data.data, function (index, item) {
+								  $html += "<option value='" + item.code + "'>" + item.name + "</option>";
+							  });
+							  $("#area").append($html);
+							  //append后必须从新渲染
+							  form.render('select');
+						  }
+					  }
+
+				  });
+
+			  });
+			  //监听县区下拉框
+			  form.on('select(area)', function(dataObj){
+				  areaText = $("#area").find("option:selected").text();
+			  });
+		  })
+		  
+		  </script>
+		  
+	</body>
+</html>

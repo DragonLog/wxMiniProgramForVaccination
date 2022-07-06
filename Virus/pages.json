@@ -1,0 +1,332 @@
+{
+	"easycom": {
+		"^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"app-plus":{
+				"titleNView":false	
+				}
+			}
+		}
+	    ,{
+            "path" : "pages/user/login",
+            "style" :                                                                                    
+            {
+                "app-plus":{
+					"titleNView":{
+						"titleText":"用户登录",
+						"titleColor":"#F0AD4E"
+						
+					}
+				}
+            }
+            
+        }
+        ,{
+            "path" : "pages/user/mine",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"我的信息",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+            
+        }
+        ,{
+            "path" : "pages/index/main",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"主界面",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/user/reg",
+            "style" :                                                                                    
+            {
+                "app-plus":{
+					"titleNView":{
+						"titleText":"用户注册",
+						"titleColor":"#F0AD4E"
+						
+					}
+				}
+            }
+            
+        }
+        
+        ,{
+            "path" : "pages/jiezhongzhe/yuYue",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"疫苗预约",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/yuYueList",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"预约历史记录",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/jieZhong",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"疫苗接种",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+            
+        }
+		,{
+		    "path" : "pages/jiezhongzhe/jieZhongList",
+		   "style" :
+		   {
+		       "app-plus":{
+		   		"titleNView":{
+		   			"titleText":"疫苗接种历史",
+		   			"titleColor":"#F0AD4E"
+		   			
+		   		}
+		   	}
+		   }
+		    
+		}
+        
+        ,{
+            "path" : "pages/worker/qianDao",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"签到",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/worker/qianDaoList",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"签到记录",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/worker/yuJian",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"预检",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+            
+        }
+        ,{
+            "path" : "pages/worker/yuJianList",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"预检记录",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+        }
+        
+        ,{
+            "path" : "pages/worker/jieZhong",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"接种",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+            
+        }
+        ,{
+            "path" : "pages/worker/jieZhongList",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"接种记录",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/worker/liiuGuan",
+            "style" :
+            {
+                "app-plus":{
+            		"titleNView":{
+            			"titleText":"留观",
+            			"titleColor":"#F0AD4E"
+            			
+            		}
+            	}
+            }
+            
+        }
+        ,{
+            "path" : "pages/worker/liuGuanList",
+           "style" :
+           {
+               "app-plus":{
+           		"titleNView":{
+           			"titleText":"留观记录",
+           			"titleColor":"#F0AD4E"
+           			
+           		}
+           	}
+           }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/inoculateSite",
+            "style" :                                                                                    
+            {
+                "app-plus":{
+                           		"titleNView":{
+                           			"titleText":"可用接种点",
+                           			"titleColor":"#F0AD4E"
+                           			
+                           		}
+								}
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/plan",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/appoint",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/pay",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/payList",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/jiezhongzhe/preCheckList",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/user/edit",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "疫苗预约与接种",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar":{
+			"list":[
+				{
+					"pagePath":"pages/index/main",
+					"text":"主页",
+					"iconPath":"static/all.png",
+					"selectedIconPath":"static/all-fill.png"
+				},
+				{
+					"pagePath":"pages/user/mine",
+					"text":"我的",
+					"iconPath":"static/bussiness-man.png",
+					"selectedIconPath":"static/certified-supplier.png"
+				}
+			]
+		
+	}
+}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link href="../../../layuiadmin/layui/css/layui.css" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<br>
+		<form class="layui-form" id="yimiaoForm">
+			<div class="layui-form-item">
+				<label class="layui-form-label">账号</label>
+				<div class="layui-input-block">
+				  <input type="text" id="username"  name="username" lay-verify="required" autocomplete="off" placeholder="请输入账号" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码</label>
+				<div class="layui-input-block">
+				  <input type="text" id="password"  name="password" lay-verify="required" autocomplete="off" placeholder="请输入密码" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">姓名</label>
+				<div class="layui-input-block">
+				  <input type="text" id="realName" name="realName" lay-verify="required" autocomplete="off" placeholder="请输入真实姓名" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">身份证号</label>
+				<div class="layui-input-block">
+				  <input type="text" id="card" name="cardId" lay-verify="required|card" autocomplete="off" placeholder="请输入身份证号" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">手机号</label>
+				<div class="layui-input-block">
+				  <input type="text" id="phone" name="phone" lay-verify="required" autocomplete="off" placeholder="请输入手机号" class="layui-input">
+				</div>			
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">所属接种点</label>
+				<div class="layui-input-inline">
+					<select id="province" lay-filter="province" >
+						<option value="">请选择省</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="city" lay-filter="city" >
+						<option value="">请选择市</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="area"  lay-filter="area" >
+						<option value="">请选择县/区</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="inoculateSite" name="inoculateSiteId"  lay-filter="inoculateSite" lay-verify="required">
+						<option value="">请选择接种点</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div style="text-align:right;width:1%;"><!--background:-->
+					<button lay-filter="yimiaoAdd" class="layui-btn layui-btn-normal"  lay-submit="">新增</button>
+				</div>
+			</div>
+			
+		</form>
+		</div>
+	</body>
+	<script src="../../../layuiadmin/app.js"></script>
+	<script src="../../../layuiadmin/layui/layui.js"></script>
+	<script>
+	layui.use(['jquery','form'],function(){
+		var $=layui.jquery,form =layui.form;
+		
+		form.on('submit(yimiaoAdd)', function(data){
+			//ajax 提交
+			$.ajax({
+				type: "POST",
+				dataType: "JSON",
+				url: server_url+"/admin/worker/save" ,//url
+				data: $('#yimiaoForm').serialize(),  //表单数据
+				headers:{
+					"x-token":localStorage.getItem("token")
+				},
+				success: function (result) {
+					
+					if (result.code == 0) {
+						var index = parent.layer.getFrameIndex(window.name);
+						parent.layer.msg('添加成功');
+						window.setTimeout(function(){
+							parent.layer.close(index);
+						},1000);	
+						
+					}else{
+						parent.layer.msg(result.message);
+					}
+				},
+				error : function() {
+					layer.msg('后台异常！未添加成功');
+				}
+			});
+			return false;
+			
+		});
+
+		var provinceText = "";
+		var cityText = "";
+		var areaText = "";
+		var inoculateSiteText = "";
+		//异步加载下拉框数据
+		$.get(server_url+"/district/findAllProvinces",function (data) {
+			if(data.code != 0){
+				layer.msg(data.msg)
+			}else{
+				var $html = "";
+				if(data.data != null) {
+					$.each(data.data, function (index, item) {
+						$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+					});
+					$("#province").append($html);
+					//append后必须从新渲染
+					form.render('select');
+				}
+			}
+
+		});
+		//监听省下拉框
+		form.on('select(province)', function(dataObj){
+			//移除城市下拉框所有选项
+			$("#city").empty();
+			var cityHtml = '<option value="">请选择市</option>';
+			$("#city").html(cityHtml);
+			var areaHtml = '<option value="">请选择县/区</option>';
+			$("#area").html(areaHtml);
+			provinceText = $("#province").find("option:selected").text();
+			var value = $("#province").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/district/findAllCities",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+						});
+						$("#city").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+		});
+//监听市下拉框
+		form.on('select(city)', function(dataObj){
+			//移除县区下拉框所有选项
+			$("#area").empty();
+			var html = '<option value="">请选择县/区</option>';
+			$("#area").html(html);
+
+			cityText = $("#city").find("option:selected").text();
+			var value = $("#city").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/district/findAllDistricts",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.code + "'>" + item.name + "</option>";
+						});
+						$("#area").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+
+		});
+		//监听县区下拉框
+		form.on('select(area)', function(dataObj){
+			areaText = $("#area").find("option:selected").text();
+
+			$("#inoculateSite").empty();
+			var html = '<option value="">请选择接种点</option>';
+			$("#inoculateSite").html(html);
+
+			areaText = $("#area").find("option:selected").text();
+			var value = $("#area").val();
+			//异步加载下拉框数据
+			$.get(server_url+"/inoculateSite/findAllInoculateSites",{"code":value},function (data) {
+				if(data.code != 0){
+					layer.msg(data.msg)
+				}else{
+					var $html = "";
+					if(data.data != null) {
+						$.each(data.data, function (index, item) {
+							$html += "<option value='" + item.id + "'>" + item.name + "</option>";
+						});
+						$("#inoculateSite").append($html);
+						//append后必须从新渲染
+						form.render('select');
+					}
+				}
+
+			});
+		});
+		form.on('select(inoculateSite)', function(dataObj){
+			inoculateSiteText = $("#inoculateSite").find("option:selected").text();
+		});
+	})
+	
+	</script>
+</html>

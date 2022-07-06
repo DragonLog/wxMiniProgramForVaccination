@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>layuiAdmin 网站用户</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+		<style>
+		.layui-table {
+			height: auto;
+			width: auto;
+			}
+		.layui-table img {
+		    max-height: 100px;
+		    max-width: 100px;
+		}
+		.layui-table-cell {
+		            height: 100px;
+		            line-height:100px;
+		        }
+		</style>
+	</head>
+	<body>
+
+		<div class="layui-fluid">
+			<div class="layui-card">
+				<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+					<div class="layui-form-item demoTable">
+						<div class="layui-inline">
+							<label class="layui-form-label">接种人姓名</label>
+							<div class="layui-input-block">
+								<input type="text" id="jiezhongzhe" name="jiezhongzhe" placeholder="请输入接种人姓名" autocomplete="off"
+									   class="layui-input">
+							</div>
+						</div>
+
+						<div class="layui-inline">
+							<button id="queryBtn" class="layui-btn layui-btn-primary" lay-submit
+									lay-filter="LAY-user-front-search">
+								<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="layui-card-body">				
+					<table id="LAY-user-manage" lay-filter="test"></table>
+				</div>
+			</div>
+		</div>
+		<script type="text/html" id="toolbarDemo">
+		  <div class="layui-btn-container">
+
+		  </div>
+		</script>
+		<script src="../../../layuiadmin/app.js"></script>
+		<script src="../../../layuiadmin/layui/layui.js"></script>
+		<script>
+			layui.use(['jquery', 'table'], function() {
+				var table = layui.table;
+				window.jQuery = window.$ = layui.jquery;
+
+				//方法级渲染
+				table.render({
+					
+					elem: '#LAY-user-manage',
+					toolbar: '#toolbarDemo',
+					method: "get",
+					limits: [3,5,8,10,15,20],
+					url: server_url + '/admin/appoint/pageQuery',
+					headers: {
+						"x-token":localStorage.getItem("token")
+					},
+					cols: [[
+						{field: 'id',title: 'ID',width: 80,sort: true,fixed: true, align: "center"},
+						{field:'qrCodeUrl',title:'预约码',align:"center", align: "center",templet:function(d){
+							return "<img src='http://localhost:8080/qrCodeImage/"+d.qrCodeUrl+"' style='border:1px solid red;height:100px;width: 100px;'/>";
+						
+						}},
+						{field: 'realName',title: '预约人姓名',width: 150, align: "center"},
+						{field: 'inoculateSiteName',title: '接种点名称',width: 150, align: "center"},
+						{field: 'appointDate',title: "预约日期",width: 120, align: "center",sort: true},
+						{field: 'createTime',title: "操作时间",width: 200, align: "center", sort: true},
+						{field: 'timeSlot',title: "预约时间段",width: 120, align: "center"},
+						{field: 'vaccineName',title: "疫苗名称",width: 120, align: "center"},
+						{field: 'status',title: "当前状态",width: 120, align: "center"}
+					]],
+					page: true,
+					request: {
+						pageName: 'current' //页码的参数名称，默认：page
+						,limitName: 'limit' //每页数据量的参数名，默认：limit
+					}
+				});
+
+				document.getElementById("queryBtn").onclick = function() {
+					//执行重载
+					table.reload('LAY-user-manage', {
+						page: {
+							curr: 1 //重新从第 1 页开始
+						},
+						where: {
+							name: $("#jiezhongzhe").val()
+						}
+					});
+					return false;
+
+				};
+			});
+		</script>
+	</body>
+</html>

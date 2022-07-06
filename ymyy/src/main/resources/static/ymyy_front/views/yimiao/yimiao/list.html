@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>layuiAdmin 网站用户</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+		<link rel="stylesheet" href="../../../layuiadmin/style/admin.css" media="all">
+		<style>
+			.layui-table {
+				height: auto;
+				width: auto;
+			}
+			.layui-table img {
+				max-height: 100px;
+				max-width: 100px;
+			}
+			.layui-table-cell {
+				height: 100px;
+				line-height:100px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="layui-fluid">
+			<div class="layui-card">
+				<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+					<div class="layui-form-item demoTable">
+						<div class="layui-inline">
+							<label class="layui-form-label">疫苗名称</label>
+							<div class="layui-input-block">
+								<input type="text" id="yimiaoZhonglei" name="yimiaoZhonglei" placeholder="请输入疫苗名称" autocomplete="off"
+									class="layui-input">
+							</div>
+						</div>
+
+						<div class="layui-inline">
+							<button id="queryBtn" class="layui-btn layui-btn-primary layuiadmin-btn-useradmin" lay-submit
+								lay-filter="LAY-user-front-search">
+								<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="layui-card-body">
+					<table id="yimiaoTable" lay-filter="test"></table>
+				</div>
+			</div>
+		</div>
+		<script type="text/html" id="toolbarDemo">
+		  <div class="layui-btn-container">
+		    <button class="layui-btn layui-btn-normal" lay-event="add">添加</button>
+		    <!-- <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button> -->
+		    <!-- <button class="layui-btn layui-btn-sm" lay-event="update">编辑</button> -->
+		  </div>
+		</script>
+		<script type="text/html" id="barDemo">
+		  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+		</script>
+		<script src="../../../layuiadmin/app.js"></script>
+		<script src="../../../layuiadmin/layui/layui.js"></script>
+		<script>
+			layui.use(['jquery', 'table'], function() {
+				var table = layui.table;
+				window.jQuery = window.$ = layui.jquery;
+
+				//方法级渲染
+				table.render({
+					
+					elem: '#yimiaoTable',
+					toolbar: '#toolbarDemo',
+					method: "get",
+					url: server_url + '/admin/vaccine/pageQuery',
+					limits: [3,5,8,10,15,20],
+					headers:{
+						"x-token":localStorage.getItem("token")
+					},
+
+					cols: [[
+						{field: 'id',title: 'ID',width: 70,sort: true,fixed: true,align:"center"},
+						{field:'imgUrl',title:'疫苗图片',align:"center", width:200,templet:function(d){
+								return "<img src='http://localhost:8080/vaccineImage/"+d.imgUrl+"' style='height:200px; width: 200px;'/>";
+							}},
+						{field: 'name',title: '疫苗名称',width: 200,align:"center"},
+						{field: 'price',title: '疫苗单价',width: 120, sort: true,align:"center"},
+						{field: 'manufacturer',title: '生产厂家', width: 200,align:"center"},
+						{field: 'category',title: "疫苗种类",width: 200,align:"center"},
+						{field: 'detail',title: "疫苗详情",width: 300,align:"center"},
+						{fixed: 'right', title:'操作', width: 150, toolbar: '#barDemo',align:"center"}
+					]],
+					page: true,
+						request: {
+							pageName: 'current' //页码的参数名称，默认：page
+							,limitName: 'limit' //每页数据量的参数名，默认：limit
+						}
+				});
+
+				document.getElementById("queryBtn").onclick = function() {
+					//执行重载
+					table.reload('yimiaoTable', {
+						page: {
+							curr: 1 //重新从第 1 页开始
+						},
+						where: {							
+							name: $("#yimiaoZhonglei").val()
+						}
+					});
+					return false;
+
+				};
+				
+				// 给表格头工具栏添加事件监听
+				table.on('toolbar(test)', function(obj){
+					var checkStatus = table.checkStatus(obj.config.id);
+				    switch(obj.event){
+				      case 'add':
+				        layer.open({
+						type: 2,
+						content: ["add.html"],   //添加页，后台controller转发到指定页
+						area: ["600px", "450px"],
+						title: ['疫苗添加'],
+						fixed: false,
+						shadeClose: true,
+						end: function () {  //刷新页面
+						  location.reload();
+						}
+					});
+				      break;
+				    
+				    };
+				});
+				
+				// 给表格行工具栏添加事件监听
+				table.on('tool(test)', function(obj){
+					var data = obj.data;
+					switch(obj.event){
+						
+						case 'del':
+							//询问框							
+							layer.msg('你确定要删除么？', {
+								time: 0 //不自动关闭
+								,btn: ['确认', '取消']
+								,yes: function(index){
+									$.ajax({
+										url: server_url+"/admin/vaccine/remove?id="+obj.data.id,
+										type: "delete",
+										headers:{
+											"x-token":localStorage.getItem("token")
+										},
+										success: function (res) {
+											if(res.code == 0){
+												layer.close(index);
+												layer.msg('删除成功', { icon: 6 });
+											}else{
+												layer.close(index);
+												layer.msg(res.message, { icon: 6 });
+											}
+											window.setTimeout(function(){
+												location.reload();
+											},1000);
+										}
+									})
+									
+								}
+							});
+						break;
+						case 'edit':
+						
+							layer.open({
+								type: 2,
+								content: ["edit.html"],   //添加页，后台controller转发到指定页
+								area: ["600px", "450px"],
+								title: ['疫苗编辑'],
+								fixed: false,
+								shadeClose: true,
+								end: function () {  //刷新页面
+									location.reload();
+								},
+								success: function(layero, index){
+									var body = layer.getChildFrame('body',index);//少了这个是不能从父页面向子页面传值的
+						　　　　　　　　//获取子页面的元素，进行数据渲染
+						　　　　　　　body.contents().find("#id").val(data.id);
+						　　　　　　　body.contents().find('#imgUrl').val(data.imgUrl);
+						　　　　　　　body.contents().find('#manufacturer').val(data.manufacturer);
+						　　　　　　　body.contents().find('#name').val(data.name);
+						　　　　　　　body.contents().find('#price').val(data.price);
+						　　　　　　　body.contents().find('#category').val(data.category);
+						　　　　　　　body.contents().find('#detail').val(data.detail);
+								},
+							});
+					
+						    break;
+					}
+				});
+				
+				
+			});
+		</script>
+	</body>
+</html>

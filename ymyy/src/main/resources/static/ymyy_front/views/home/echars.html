@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>第一个 ECharts 实例</title>
+    <!-- 引入 echarts.js -->
+	<script src="jquery.min.js"></script>
+    <script src="echarts.min.js"></script>
+	<style>
+		#main{
+            margin-top: 20px;
+			height:550px;
+			width:100%;
+		}
+		#main1{
+			height: 550px;
+			width:100%;
+		}
+        #main2{
+            height: 550px;
+            width:100%;
+        }
+	</style>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+	<div class="wws">疫苗预约接种数据分析平台</div>
+    <div id="main"></div>
+	
+	    <div id="main1"></div>
+    <div id="main2"></div>
+		
+    <script type="text/javascript">
+	
+	
+	
+	
+	
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        
+        $.get('http://localhost:8080/eChart/bar').done(function (data) {
+            myChart.setOption({
+                title: {
+                    text: '预约接种数据柱状图'
+                },
+                color: ['green'],
+                tooltip: {},
+                legend: {
+                    data:['人数']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    data: ['预约总人数','签到总人数','预检总人数','接种总人数','留观总人数']
+                },
+                yAxis: {},
+                series: [{
+                    name: '人数',
+                    type: 'bar',
+                    data: data.data
+                }]
+            });
+        });
+		
+		var myChart1 = echarts.init(document.getElementById('main1'));
+		
+		$.get('http://localhost:8080/eChart/line').done(function (data) {
+		    myChart1.setOption({
+		            title: {
+		                text: '预约接种数据折线图'
+		            },
+                    color: ['red', 'green','yellow','blue','purple'],
+		            tooltip: {
+		                trigger: 'axis'
+		            },
+		            legend: {
+		                data: [ '预约人数','签到人数', '预检人数', '接种人数', '留观人数']
+		            },
+		            grid: {
+		                left: '3%',
+		                right: '4%',
+		                bottom: '3%',
+		                containLabel: true
+		            },
+		            toolbox: {
+		                feature: {
+		                    saveAsImage: {}
+		                }
+		            },
+		            xAxis: {
+		                type: 'category',
+		                boundaryGap: false,
+		                data: data.data.dateList
+		            },
+		            yAxis: {
+		                type: 'value'
+		            },
+		            series: [
+                        {
+                            name: '预约人数',
+                            type: 'line',
+                            stack: '总量',
+                            data: data.data.appointList
+                        },
+		                {
+		                    name: '签到人数',
+		                    type: 'line',
+		                    stack: '总量',
+		                    data: data.data.signList
+		                },
+		                {
+		                    name: '预检人数',
+		                    type: 'line',
+		                    stack: '总量',
+		                    data: data.data.preCheckList
+		                },
+		                {
+		                    name: '接种人数',
+		                    type: 'line',
+		                    stack: '总量',
+		                    data: data.data.inoculateList
+		                },
+		                {
+		                    name: '留观人数',
+		                    type: 'line',
+		                    stack: '总量',
+		                    data: data.data.observeList
+		                }
+		            ]
+		        });
+		});
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart2 = echarts.init(document.getElementById('main2'));
+
+        $.get('http://localhost:8080/eChart/test').done(function (data) {
+            myChart2.setOption({
+                title: {
+                    text: '疫苗预约量前三'
+                },
+                color: ['red'],
+                tooltip: {},
+                legend: {
+                    data:['预约数量']
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                yAxis: {
+                    data: data.data.x
+                },
+                xAxis: {},
+                series: [{
+                    name: '预约量',
+                    type: 'bar',
+                    data: data.data.y
+                }]
+            });
+        });
+    </script>
+	<style>
+	.wws{
+		text-align:center;
+		color: #000000;
+		font-family:"Times New Roman",Times,serif;
+		font-size:40px;
+		line-height:70px;
+	}
+	</style>
+	
+	
+</body>
+</html>

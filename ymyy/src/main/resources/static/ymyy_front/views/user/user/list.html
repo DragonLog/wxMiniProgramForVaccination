@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<!-- 1.引入样式 -->
+		<link href="../../../layuiadmin/layui/css/layui.css" rel="stylesheet"/>
+
+	</head>
+		
+	<body>
+	<div class="layui-fluid">
+		<div class="layui-card" style="margin-top: 20px;">
+		<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+			<div class="layui-form-item demoTable">
+				<div class="layui-inline">
+					<label class="layui-form-label">接种者姓名</label>
+					<div class="layui-input-block">
+						<input type="text" id="realName" name="realName" placeholder="请输入接种者姓名" autocomplete="off"
+							class="layui-input">
+							 
+		
+					</div>
+				</div>
+		
+				<div class="layui-inline">
+					<button id="queryBtn" class="layui-btn layui-btn-primary" lay-submit
+						lay-filter="LAY-user-front-search">
+						<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+					</button>
+				</div>
+			</div>
+		</div>
+			<div class="layui-card-body">
+				<table id="adminTable" lay-filter="adminTable"></table>
+			</div>
+		</div>
+	</div>
+		<!-- table的头部工具栏********************************** -->
+		<script type="text/html" id="toolbarDemo" >
+		  <div class="layui-btn-container">
+		  <!--2. 创建一个table -->
+		    
+
+		  </div>
+		  
+		</script>
+		
+		<!-- ******************添加行工具栏************** -->
+		<script type="text/html" id="rowbar">
+		  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+		  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+		</script>
+		
+		
+	</body>
+	<!-- 3.引入layui.js -->
+	<script src="../../../layuiadmin/layui/layui.js"></script>
+
+	<!-- 4.编写js渲染table -->
+	<script>
+	var server="http://localhost:8080"
+	layui.use(['jquery','table','layer'],function(){
+		//加载执行table
+			var table = layui.table,layer=layui.layer;
+			var $=layui.jquery;
+		  table.render({
+			elem: '#adminTable'
+			,url:server + '/admin/user/pageQuery'// 获取数据的地址
+			,toolbar: "#toolbarDemo"
+			  ,headers: {
+				  "x-token":localStorage.getItem("token")
+			  }
+			,limits: [3,5,8,10,15,20]//这里是设置每页显示的个数的一个数组
+			,limit: 10//这是默认的每页要显示数据的个数
+			,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+			,cols: [[
+			  {field:'id', width:80, title: 'ID', sort: true,fixed: true,align:"center"}
+			  ,{field:'username', width:150, title: '用户名',align:"center"}
+			  ,{field:'realName', width:100, title: '姓名',align:"center"}
+			  ,{field:'phone', width:200, title: '手机号',align:"center"}
+			  ,{field:'cardId', width:300, title: '身份证号',sort:true,align:"center"}
+			  ,{field:'district', width:300, title: '所属行政区划',align:"center"}
+			  ,{field:'address',  title: '地址', width: 400,align:"center"}
+			  ,{field:'password',title: '密码', width: 200,align:"center"}
+			   ,{fixed: 'right', title:'操作', toolbar: '#rowbar',width: 150,align:"center"}
+			]]
+			  ,page:true//支持分页
+			  ,request: {
+				  pageName: 'current' //页码的参数名称，默认：page
+				  ,limitName: 'limit' //每页数据量的参数名，默认：limit
+			  }
+
+		  });
+		  document.getElementById("queryBtn").onclick = function() {
+		  	console.log("...查询")
+		  	//执行重载
+		  	table.reload('adminTable', {
+		  		page: {
+		  			curr: 1 //重新从第 1 页开始
+		  		},
+		  		where: {							
+		  			realName: $("#realName").val()							
+		  		}
+		  	});
+		  	return false;
+		  
+		  };
+		  
+		  
+
+		  	table.on('tool(adminTable)',function(obj){
+		  		switch(obj.event){
+		  			case 'edit':
+		  				layer.open({
+		  					type:2,
+		  					area:["740px",'600px'],
+							content:'edit.html',
+							title:['接种者编辑'],
+							fixed: false,
+							shadeClose: true,
+							end: function () {  //刷新页面
+								location.reload();
+							},
+							success: function(layero, index){// edit.html加载完成后 执行的，页面元素复制 
+							var body = layer.getChildFrame('body', index); // 给username，根据id 找元素
+							 body.contents().find("#username").val(obj.data.username); 
+							 body.contents().find("#id").val(obj.data.id); 
+							 body.contents().find("#realName").val(obj.data.realName);
+							 body.contents().find("#password").val(obj.data.password);
+							 body.contents().find("#phone").val(obj.data.phone);
+							 body.contents().find("#cardId").val(obj.data.cardId);
+							 body.contents().find("#district").text(obj.data.district);
+							 body.contents().find("#address").val(obj.data.address);
+							   }
+							  
+		  				})
+						
+		  			break;
+		  			case 'del':
+						layer.msg('你确定要删除么？', {
+							time: 0 //不自动关闭
+							,btn: ['确认', '取消']
+							,yes: function(index){
+								$.ajax({
+									url: server+"/admin/user/remove?id="+obj.data.id,
+									type: "delete",
+									headers:{
+										"x-token":localStorage.getItem("token")
+									},
+									success: function (res) {
+										if(res.code == 0){
+											layer.close(index);
+											layer.msg('删除成功', { icon: 6 });
+										}else{
+											layer.close(index);
+											layer.msg('删除失败:'+res.message, { icon: 6 });
+										}
+										window.setTimeout(function(){
+											location.reload();
+										},1000);
+									}
+								})
+							}
+						});
+		  			 break;
+		  		}
+		  	});
+
+	})
+	
+	</script>
+</html>

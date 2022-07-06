@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>接种点工作人员</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../../layuiadmin/layui/css/layui.css" media="all">
+	</head>
+	<body>
+		<div class="layui-fluid">
+			<div class="layui-card" style="margin-top: 20px;">
+				<!-- *************************************************** -->
+				<div class="layui-form layui-card-header layuiadmin-card-header-auto">
+					<div class="layui-form-item demoTable">
+						<div class="layui-inline">
+							<label class="layui-form-label">医护人姓名</label>
+							<div class="layui-input-block">
+								<input type="text" id="realName" name="realName" placeholder="请输入医护人员姓名" autocomplete="off"
+									class="layui-input">
+									 
+
+							</div>
+						</div>
+				
+						<div class="layui-inline">
+							<button id="queryBtn" class="layui-btn layui-btn-primary" lay-submit
+								lay-filter="LAY-user-front-search">
+								<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+				<!--********************************  -->
+				<div class="layui-card-body">
+					<table id="myTable" lay-filter="test"></table>
+				</div>
+
+			</div>
+		</div>
+		
+		
+		
+			<script type="text/html" id="toolbarDemo">
+			  <div class="layui-btn-container">
+			    <button class="layui-btn layui-btn-normal" lay-event="add">添加</button>
+			    <!-- <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button> -->
+			    <!-- <button class="layui-btn layui-btn-sm" lay-event="update">编辑</button> -->
+				
+			  </div>
+			</script>
+			<script type="text/html" id="barDemo">
+			  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+			</script>
+		
+		
+		<!-- ******************************** -->
+	
+		<!--********************************  -->
+		
+	</body>
+	
+	<script src="../../../layuiadmin/app.js"></script>
+	<script src="../../../layuiadmin/layui/layui.js"></script>
+	<script>
+		layui.use(['jquery', 'table','layer'], function() {
+			var table = layui.table,layer=layui.layer;
+			window.jQuery = window.$ = layui.jquery;
+
+			
+
+			//方法级渲染
+			table.render({
+					elem: '#myTable',
+					toolbar: '#toolbarDemo',
+					method: "get",
+					url: server_url + '/admin/worker/pageQuery',
+					headers: {
+						"x-token":localStorage.getItem("token")
+					},
+					limits: [3,5,8,10,15,20],
+					cols: [[
+						{field: 'id',title: 'ID',width: 80,sort: true,fixed: true,align:"center"},
+						{field: 'username',title: '账号',width: 200,align:"center"},
+						{field:'realName',title:'姓名',width:150,align:"center"},
+						{field:'cardId',title:'身份证号',width:300,align:"center",sort: true},
+						{field:'phone',title:'手机号',width:200,align:"center"},
+						{field:'inoculateSiteName',title:'所属接种点', width: 200,align:"center"},
+						{field:'password',title:'密码', width: 100,align:"center"},
+						{fixed:'right',title:'操 作',toolbar:'#barDemo', width: 150,align:"center"}
+					]],
+					page: true,
+					request: {
+						pageName: 'current' //页码的参数名称，默认：page
+						,limitName: 'limit' //每页数据量的参数名，默认：limit
+					}
+				}
+			);
+			document.getElementById("queryBtn").onclick = function() {
+				console.log("...查询")
+				//执行重载
+				table.reload('myTable', {
+					page: {
+						curr: 1 //重新从第 1 页开始
+					},
+					where: {							
+						realName: $("#realName").val()							
+					}
+				});
+				return false;
+			
+			};
+			
+			// 给表格头工具栏添加事件监听
+			table.on('toolbar(test)', function(obj){
+				var checkStatus = table.checkStatus(obj.config.id);
+			    switch(obj.event){
+			      case 'add':
+			        layer.open({
+					type: 2,
+					content: ["add.html"],   //添加页，后台controller转发到指定页
+					area: ["950px", "500px"],
+					title: ['医护人员添加'],
+					fixed: false,
+					shadeClose: true,
+					end: function () {  //刷新页面
+					  location.reload();
+					}
+				});
+			      break;
+			    
+			    }
+			});
+			
+			// 给table的行工具栏绑定事件
+			table.on('tool(test)',function(obj){
+				switch(obj.event){
+				case 'del':
+					//询问框							
+					layer.msg('你确定要删除么？', {
+						time: 0 //不自动关闭
+						,btn: ['确认', '取消']
+						,yes: function(index){
+							$.ajax({
+								url: server_url+"/admin/worker/remove?id="+obj.data.id,
+								type: "delete",
+								headers:{
+									"x-token":localStorage.getItem("token")
+								},
+								success: function (res) {
+									if(res.code == 0){
+										layer.close(index);
+										layer.msg('删除成功', { icon: 6 });
+									}else{
+										layer.close(index);
+										layer.msg('删除失败:'+res.message, { icon: 6 });
+									}
+									window.setTimeout(function(){
+										location.reload();
+									},1000);
+								}
+							})
+							
+						}
+					});
+				break;
+				case 'edit':
+				
+					layer.open({
+						type: 2,
+						content: ["edit.html"],   //添加页，后台controller转发到指定页
+						area: ["950px", "500px"],
+						title: ['医护人员编辑'],
+						fixed: false,
+						shadeClose: true,
+						end: function () {  //刷新页面
+							location.reload();
+						},
+						success: function(layero, index){
+							var body=layer.getChildFrame('body',index);//少了这个是不能从父页面向子页面传值的
+				　　　　　　　body.contents().find("#id").val(obj.data.id);
+				　　　　　　  body.contents().find('#username').val(obj.data.username);
+				　　　　　　　body.contents().find('#realName').val(obj.data.realName);
+				　　　　　　　body.contents().find('#card').val(obj.data.cardId);
+							body.contents().find('#phone').val(obj.data.phone);     
+							body.contents().find('#district').text(obj.data.inoculateSiteName);
+							body.contents().find('#password').val(obj.data.password);
+						},
+					});
+									
+				    break;
+				}
+			})
+		});
+	
+	</script>
+	
+	
+</html>
